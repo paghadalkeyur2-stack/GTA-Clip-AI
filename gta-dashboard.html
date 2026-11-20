@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTA Clip AI</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#10131b;color:white;font-family:Arial,sans-serif;padding:22px}
+header{padding:18px 0;border-bottom:1px solid #303746}
+h1{color:#55e58a;margin:0;font-size:28px}
+p{color:#aab3c2}
+main{max-width:650px;margin:25px auto}
+.card{background:#1b2230;border:1px solid #303b4d;border-radius:16px;padding:20px;margin:18px 0}
+button,.upload{display:block;width:100%;padding:15px;border:0;border-radius:10px;background:#20bd68;color:#07130b;font-size:16px;font-weight:bold;text-align:center;margin-top:14px}
+input{width:100%;margin-top:14px;color:white}
+video{width:100%;margin-top:15px;border-radius:10px;background:#080a0f}
+.small{font-size:13px;color:#9aa6b8}
+</style>
+</head>
+<body>
+<header>
+<h1>GTA CLIP AI</h1>
+<p>Your Gameplay. Your Highlights.</p>
+</header>
+<main>
+<div class="card">
+<h2>🎮 Create Gaming Shorts</h2>
+<p>Upload your GTA gameplay video to get started.</p>
+<label class="upload">
+Choose Gameplay Video
+<input id="videoFile" type="file" accept="video/*">
+</label>
+<video id="preview" controls hidden></video>
+<p id="status" class="small">No video selected.</p>
+</div>
+<div class="card">
+<h2>✂️ Clip Settings</h2>
+<label>Clip title</label>
+<input id="clipTitle" placeholder="My GTA Best Moment">
+<label>Start time (seconds)</label>
+<input id="start" type="number" min="0" value="0">
+<label>End time (seconds)</label>
+<input id="end" type="number" min="1" value="30">
+<button id="previewClip">Preview Selected Moment</button>
+<p class="small" id="message">First version: video preview and manual clip selection.</p>
+</div>
+<div class="card">
+<h2>📱 Export Settings</h2>
+<p>Target format: 9:16 Vertical Shorts</p>
+<p class="small">Video processing and export will be connected in the next development phase.</p>
+</div>
+</main>
+<script>
+const file=document.getElementById('videoFile');
+const video=document.getElementById('preview');
+const status=document.getElementById('status');
+file.addEventListener('change',()=>{
+ if(!file.files.length)return;
+ video.src=URL.createObjectURL(file.files[0]);
+ video.hidden=false;
+ video.onloadedmetadata=()=>{
+  status.textContent="Video loaded • "+Math.round(video.duration)+" seconds";
+  document.getElementById('end').value=Math.min(30,Math.floor(video.duration));
+ };
+});
+document.getElementById('previewClip').onclick=()=>{
+ const start=Number(document.getElementById('start').value);
+ const end=Number(document.getElementById('end').value);
+ if(!video.src){alert("Please select a video first.");return;}
+ if(start<0||end<=start||end>video.duration){
+  alert("Please enter a valid clip time.");return;
+ }
+ video.currentTime=start;
+ video.play();
+ const stop=()=>{if(video.currentTime>=end){video.pause();video.removeEventListener('timeupdate',stop);}};
+ video.addEventListener('timeupdate',stop);
+};
+</script>
+</body>
+</html>
